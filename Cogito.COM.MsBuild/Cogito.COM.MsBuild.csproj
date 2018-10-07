@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net45</TargetFramework>
+      <Authors>Jerome Haltom</Authors>
+      <Description>Additional MSBuild functionality for managed COM.</Description>
+      <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+      <BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
+  </PropertyGroup>
+
+    <ItemGroup>
+        <Reference Include="Microsoft.Build.Framework" />
+        <Reference Include="Microsoft.Build.Utilities.v4.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="build\*.targets;build\*.props">
+            <Pack>true</Pack>
+            <PackagePath>build</PackagePath>
+        </None>
+    </ItemGroup>
+
+</Project>

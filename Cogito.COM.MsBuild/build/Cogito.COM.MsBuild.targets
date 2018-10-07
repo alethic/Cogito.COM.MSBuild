@@ -1,0 +1,177 @@
+<Project>
+
+    <ItemGroup>
+        <WindowsKitsRoot Include="$([MSBuild]::GetRegistryValueFromView('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Kits\Installed Roots', 'KitsRoot10', null, RegistryView.Registry32, RegistryView.Default))" />
+        <WindowsKitsRoot Include="$([MSBuild]::GetRegistryValueFromView('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Kits\Installed Roots', 'KitsRoot81', null, RegistryView.Registry32, RegistryView.Default))" />
+        <WindowsKitsRoot Include="$([MSBuild]::GetRegistryValueFromView('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Kits\Installed Roots', 'KitsRoot', null, RegistryView.Registry32, RegistryView.Default))" />
+        <MtToolSearchPath Include="@(WindowsKitsRoot->'%(Identity)bin\x86\mt.exe')" />
+        <MtToolSearchPath Include="@(WindowsKitsRoot->'%(Identity)bin\x64\mt.exe')" />
+        <MtToolSearchPath Include="@(WindowsKitsRoot->'%(Identity)bin\$(Platform)\mt.exe')" />
+        <MtToolPathItems Include="@(MtToolSearchPath)" Conditon="Exists('%(Identity)')" />
+    </ItemGroup>
+
+    <PropertyGroup>
+        <EnableCOMExport Condition="'$(EnableCOMExport)' == ''">false</EnableCOMExport>
+        <EnableCOMImport Condition="'$(EnableCOMImport)' == ''">false</EnableCOMImport>
+        
+        <!-- embed com objects if import/export set -->
+        <EmbedCOMTypeLib Condition="'$(EnableCOMExport)' == 'true' and '$(EmbedCOMTypeLib)' == ''">true</EmbedCOMTypeLib>
+        <EmbedCOMTypeLib Condition="'$(EnableCOMImport)' == 'true' and '$(EmbedCOMTypeLib)' == ''">true</EmbedCOMTypeLib>
+        <EmbedCOMManifest Condition="'$(EnableCOMExport)' == 'true' and '$(EmbedCOMManifest)' == ''">true</EmbedCOMManifest>
+        <EmbedCOMManifest Condition="'$(EnableCOMImport)' == 'true' and '$(EmbedCOMManifest)' == ''">true</EmbedCOMManifest>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <IntermediateCOMApplicationManifest>$(IntermediateOutputPath)$(TargetName)$(TargetExt).manifest</IntermediateCOMApplicationManifest>
+        <MSBuildDisableGetCopyToOutputDirectoryItemsOptimization>true</MSBuildDisableGetCopyToOutputDirectoryItemsOptimization>
+        <COMTaskAssembly Condition="'$(COMTaskAssembly)' != ''">$([System.IO.Path]::GetFullPath($(COMTaskAssembly)))</COMTaskAssembly>
+    </PropertyGroup>
+    
+    <PropertyGroup>
+        <TargetsTriggeredByCompilation>
+            $(TargetsTriggeredByCompilation);
+            EmbedCOMTypeLib;
+            EmbedCOMAssemblyManifest;
+        </TargetsTriggeredByCompilation>
+    </PropertyGroup>
+
+    <Target Name="ConfigureCOMVariables">
+        <PropertyGroup>
+            <MtToolPathExpr>@(MtToolPathItems)</MtToolPathExpr>
+            <MtToolPath>$([System.IO.Path]::GetDirectoryName($(MtToolPathExpr.Substring(0, $(MtToolPathExpr.IndexOf(';'))))))</MtToolPath>
+        </PropertyGroup>
+    </Target>
+
+    <UsingTask
+        TaskName="Mt"
+        AssemblyFile="$(VCTargetsPath14)\Microsoft.Build.CPPTasks.Common.dll" />
+
+    <Target
+        Name="GenerateCOMTypeLib">
+
+        <Error
+            Text="Could not locate tlbexp.exe in the framework SDK directory. Ensure the Windows SDK has been installed."
+            Condition="!Exists('$(TargetFrameworkSDKToolsDirectory)\tlbexp.exe')" />
+
+        <TlbExp
+            ToolPath="$(TargetFrameworkSDKToolsDirectory)"
+            Assembly="%(IntermediateAssembly.Identity)"
+            OutputPath="%(IntermediateAssembly.RelativeDir)%(IntermediateAssembly.Filename).tlb"
+            AsmPath="@(ReferencePath->'%(RelativeDir)')" />
+
+        <Touch
+            Files="%(IntermediateAssembly.RelativeDir)%(IntermediateAssembly.Filename).tlb"
+            ForceTouch="true" />
+    </Target>
+
+    <Target
+        Name="EmbedCOMTypeLib"
+        DependsOnTargets="GenerateCOMTypeLib"
+        Condition="'$(EmbedCOMTypeLib)' == 'true'">
+
+        <EmbedTypeLib
+            TargetPath="%(IntermediateAssembly.Identity)"
+            TypeLibPath="%(IntermediateAssembly.RelativeDir)%(IntermediateAssembly.Filename).tlb" />
+    </Target>
+
+    <Target
+        Name="GenerateCOMAssemblyManifest"
+        DependsOnTargets="ConfigureCOMVariables;GenerateCOMTypeLib"
+        Condition="'$(OutputType)' == 'Library'">
+
+        <Error
+            Condition="!Exists('%(IntermediateAssembly.Identity)')"
+            Text="Missing managed input assembly." />
+        <Error
+            Condition="!Exists('%(IntermediateAssembly.RelativeDir)%(IntermediateAssembly.Filename).tlb')"
+            Text="Missing managed type library." />
+
+        <Delete
+            Files="%(IntermediateAssembly.RelativeDir)%(IntermediateAssembly.Filename).manifest"
+            Condition="Exists('%(IntermediateAssembly.RelativeDir)%(IntermediateAssembly.Filename).manifest')" />
+
+        <Message
+            Text="Generating manifest from managed assembly" />
+        <Mt
+            ToolPath="$(MtToolPath)"
+            ManifestFromManagedAssembly="%(IntermediateAssembly.Identity)"
+            SuppressDependencyElement="true"
+            OutputManifestFile="%(IntermediateAssembly.RelativeDir)%(IntermediateAssembly.Filename).manifest" />
+
+        <Message
+            Text="Updating manifest with TypeLib" />
+        <Mt
+            ToolPath="$(MtToolPath)"
+            Sources="%(IntermediateAssembly.RelativeDir)%(IntermediateAssembly.Filename).manifest"
+            ComponentFileName="%(IntermediateAssembly.Filename)%(IntermediateAssembly.Extension)"
+            SuppressDependencyElement="true"
+            TypeLibraryFile="%(IntermediateAssembly.RelativeDir)%(IntermediateAssembly.Filename).tlb"
+            OutputManifestFile="%(IntermediateAssembly.RelativeDir)%(IntermediateAssembly.Filename).manifest" />
+
+        <Message
+            Text="Patching manifest." />
+        <PatchAssemblyManifest
+            ManifestFile="%(IntermediateAssembly.RelativeDir)%(IntermediateAssembly.Filename).manifest" />
+    </Target>
+
+    <Target
+        Name="EmbedCOMAssemblyManifest"
+        DependsOnTargets="ConfigureCOMVariables;GenerateCOMAssemblyManifest"
+        Condition="'$(EmbedCOMManifest)' == 'true' and '$(OutputType)' == 'Library'">
+
+        <Message
+            Text="Embedding COM Assembly Manifest into Assembly" />
+        <Mt
+            ToolPath="$(MtToolPath)"
+            Sources="%(IntermediateAssembly.RelativeDir)%(IntermediateAssembly.Filename).manifest"
+            OutputResourceManifests="%(IntermediateAssembly.Identity);2" />
+    </Target>
+
+    <Target
+        Name="ResolveAssemblyDependencies"
+        DependsOnTargets="GetCopyToOutputDirectoryItems">
+        <ItemGroup>
+            <_ResolveAssemblyIdentity Include="@(AllItemsFullPathWithTargetPath)" Condition="'%(Extension)' == '.exe' and $([System.String]::new('%(TargetPath)').IndexOf('\')) == -1 and '%(Filename)' != '$(TargetName)'" />
+            <_ResolveAssemblyIdentity Include="@(AllItemsFullPathWithTargetPath)" Condition="'%(Extension)' == '.dll' and $([System.String]::new('%(TargetPath)').IndexOf('\')) == -1 and '%(Filename)' != '$(TargetName)'" />
+            <_ResolveAssemblyIdentity Include="@(AllItemsFullPathWithTargetPath)" Condition="'%(Extension)' == '.ocx' and $([System.String]::new('%(TargetPath)').IndexOf('\')) == -1 and '%(Filename)' != '$(TargetName)'" />
+            <_ResolveAssemblyIdentity Include="@(ReferencePath->'%(FullPath)')" Condition="'%(Extension)' == '.dll'" />
+        </ItemGroup>
+        <ResolveAssemblyManifestMetadata
+            Assemblies="@(_ResolveAssemblyIdentity)">
+            <Output TaskParameter="ResolvedAssemblies" ItemName="__ResolvedAssemblyDependencies" />
+        </ResolveAssemblyManifestMetadata>
+        <ItemGroup>
+            <ResolvedAssemblyDependencies Include="@(__ResolvedAssemblyDependencies)" Exclude="@(COMImportExcludes)" />
+        </ItemGroup>
+    </Target>
+
+    <Target
+        Name="BuildCOMApplicationManifest"
+        DependsOnTargets="ResolveAssemblyDependencies"
+        Inputs="$(EmbeddedWin32Manifest);$(Win32Manifest);@(ResolvedAssemblyDependencies->'%(ManifestPath)')"
+        Outputs="$(IntermediateCOMApplicationManifest)">
+
+        <PropertyGroup>
+            <SourceCOMApplicationManifest Condition="Exists('$(EmbeddedWin32Manifest)')">$(EmbeddedWin32Manifest)</SourceCOMApplicationManifest>
+            <SourceCOMApplicationManifest Condition="Exists('$(Win32Manifest)')">$(Win32Manifest)</SourceCOMApplicationManifest>
+        </PropertyGroup>
+
+        <!-- apply changes -->
+        <UpdateAssemblyManifest
+            ManifestSource="$(SourceCOMApplicationManifest)"
+            ManifestOutput="$(IntermediateCOMApplicationManifest)"
+            Dependencies="@(ResolvedAssemblyDependencies)" />
+
+    </Target>
+
+    <Target
+        Name="UpdateCOMApplicationManifest"
+        BeforeTargets="CoreCompile"
+        DependsOnTargets="BuildCOMApplicationManifest"
+        Condition="'$(EmbedCOMManifest)' == 'true' and '$(NoWin32Manifest)' != 'true' and '$(OutputType)' == 'Exe'">
+        <PropertyGroup>
+            <Win32Manifest Condition="Exists('$(IntermediateCOMApplicationManifest)')">$(IntermediateCOMApplicationManifest)</Win32Manifest>
+        </PropertyGroup>
+    </Target>
+
+</Project>

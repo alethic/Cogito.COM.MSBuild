@@ -1,0 +1,32 @@
+<Project>
+
+    <ItemGroup>
+        <COMImportExcludes Include="MyApplication.app" />
+    </ItemGroup>
+
+    <PropertyGroup>
+        <COMTaskAssembly Condition="'$(COMTaskAssembly)' == ''">$(MSBuildThisFileDirectory)..\tasks\net45\FileAndServe.MSBuild.COM.dll</COMTaskAssembly>
+        <COMTaskAssembly>$([System.IO.Path]::GetFullPath($(COMTaskAssembly)))</COMTaskAssembly>
+    </PropertyGroup>
+    
+    <UsingTask
+        TaskName="ResolveAssemblyManifestMetadata"
+        AssemblyFile="$(COMTaskAssembly)" />
+
+    <UsingTask
+        TaskName="UpdateAssemblyManifest"
+        AssemblyFile="$(COMTaskAssembly)" />
+
+    <UsingTask
+        TaskName="PatchAssemblyManifest"
+        AssemblyFile="$(COMTaskAssembly)" />
+
+    <UsingTask
+        TaskName="TlbExp"
+        AssemblyFile="$(COMTaskAssembly)" />
+
+    <UsingTask
+        TaskName="EmbedTypeLib"
+        AssemblyFile="$(COMTaskAssembly)" />
+    
+</Project>

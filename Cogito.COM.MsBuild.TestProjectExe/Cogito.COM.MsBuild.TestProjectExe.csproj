@@ -1,0 +1,22 @@
+﻿<Project>
+    <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+    <PropertyGroup>
+        <TargetFramework>net47</TargetFramework>
+        <EnableCOMExport>true</EnableCOMExport>
+        <ApplicationIcon />
+        <OutputType>Exe</OutputType>
+        <StartupObject />
+        <COMTaskAssembly>$(MSBuildThisFileDirectory)\..\FileAndServe.MSBuild.COM\bin\$(Configuration)\net45\FileAndServe.MSBuild.COM.dll</COMTaskAssembly>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AssemblyName>Cogito.COM.MsBuild.TestProjectExe</AssemblyName>
+    </PropertyGroup>
+
+    <Import Project="../FileAndServe.MSBuild.COM/build/FileAndServe.MSBuild.COM.props" />
+    <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+    <Import Project="../FileAndServe.MSBuild.COM/build/FileAndServe.MSBuild.COM.targets" />
+    <ItemGroup>
+      <ProjectReference Include="..\Cogito.COM.MsBuild.TestProject\Cogito.COM.MsBuild.TestProject.csproj" />
+      <ProjectReference Include="..\Cogito.COM.MsBuild\Cogito.COM.MsBuild.csproj" />
+    </ItemGroup>
+</Project>
