@@ -3,9 +3,10 @@
   <PropertyGroup>
     <TargetFramework>net45</TargetFramework>
       <Authors>Jerome Haltom</Authors>
-      <Description>Additional MSBuild functionality for managed COM.</Description>
+      <Description>MSBuild extensions for building COM assembly manifests and COM application manifests for COM registry free activation.</Description>
       <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
       <BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
+      <PackageProjectUrl>https://github.com/wasabii/Cogito.COM.MsBuild</PackageProjectUrl>
   </PropertyGroup>
 
     <ItemGroup>
