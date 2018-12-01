@@ -32,7 +32,7 @@
             $(TargetsTriggeredByCompilation);
             EmbedCOMTypeLib;
             EmbedCOMAssemblyManifest;
-        </TargetsTriggeredByCompilation>
+        </TargetsTriggeredByCompilation> 
     </PropertyGroup>
 
     <Target Name="ConfigureCOMVariables">
