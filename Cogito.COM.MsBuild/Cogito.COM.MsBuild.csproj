@@ -7,6 +7,7 @@
       <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
       <BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
       <PackageProjectUrl>https://github.com/wasabii/Cogito.COM.MsBuild</PackageProjectUrl>
+      <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
 
     <ItemGroup>
