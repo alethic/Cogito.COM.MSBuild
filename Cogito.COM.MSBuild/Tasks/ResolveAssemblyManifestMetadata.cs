@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -50,7 +50,7 @@ namespace Cogito.COM.MSBuild
         [DllImport("kernel32.dll", EntryPoint = "LockResource")]
         static extern IntPtr LockResource(IntPtr hGlobal);
 
-        readonly static XNamespace asmv1 = "urn:schemas-microsoft-com:asm.v1";
+        static readonly XNamespace asmv1 = "urn:schemas-microsoft-com:asm.v1";
 
         /// <summary>
         /// Assemblies to scan.

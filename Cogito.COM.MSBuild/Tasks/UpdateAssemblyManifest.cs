@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -11,7 +11,7 @@ namespace Cogito.COM.MSBuild
         Microsoft.Build.Utilities.Task
     {
 
-        readonly static XNamespace asmv1 = "urn:schemas-microsoft-com:asm.v1";
+        static readonly XNamespace Asmv1 = "urn:schemas-microsoft-com:asm.v1";
 
         /// <summary>
         /// Path of source manifest file.
@@ -58,16 +58,16 @@ namespace Cogito.COM.MSBuild
 
             // find or create dependency element
             var d = manifest.Root
-                .Elements(asmv1 + "dependency")
-                .Elements(asmv1 + "dependentAssembly")
-                .Elements(asmv1 + "assemblyIdentity")
+                .Elements(Asmv1 + "dependency")
+                .Elements(Asmv1 + "dependentAssembly")
+                .Elements(Asmv1 + "assemblyIdentity")
                 .Where(i => (string)i.Attribute("name") == name)
                 .FirstOrDefault();
             if (d == null)
                 manifest.Root.Add(
-                    new XElement(asmv1 + "dependency",
-                        new XElement(asmv1 + "dependentAssembly", d =
-                            new XElement(asmv1 + "assemblyIdentity"))));
+                    new XElement(Asmv1 + "dependency",
+                        new XElement(Asmv1 + "dependentAssembly", d =
+                            new XElement(Asmv1 + "assemblyIdentity"))));
 
             // update name
             if (name != null)
