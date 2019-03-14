@@ -2,7 +2,7 @@ using System.Xml.Linq;
 
 using Microsoft.Build.Framework;
 
-namespace Cogito.COM.MsBuild
+namespace Cogito.COM.MSBuild
 {
 
     public class PatchAssemblyManifest :

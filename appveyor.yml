@@ -17,8 +17,8 @@ before_build:
 
 build:
   verbosity: minimal
-  project: Cogito.COM.MsBuild.sln
+  project: Cogito.COM.MSBuild.sln
 
 artifacts:
   - path: pkg\*.nupkg
-    name: Cogito.COM.MsBuild
+    name: Cogito.COM.MSBuild

@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace Cogito.COM.MsBuild
+namespace Cogito.COM.MSBuild
 {
 
     public class EmbedTypeLib :

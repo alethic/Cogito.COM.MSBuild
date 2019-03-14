@@ -5,7 +5,7 @@
     </ItemGroup>
 
     <PropertyGroup>
-        <COMTaskAssembly Condition="'$(COMTaskAssembly)' == ''">$(MSBuildThisFileDirectory)..\tasks\net45\Cogito.COM.MsBuild.dll</COMTaskAssembly>
+        <COMTaskAssembly Condition="'$(COMTaskAssembly)' == ''">$(MSBuildThisFileDirectory)..\tasks\net45\Cogito.COM.MSBuild.dll</COMTaskAssembly>
         <COMTaskAssembly>$([System.IO.Path]::GetFullPath($(COMTaskAssembly)))</COMTaskAssembly>
     </PropertyGroup>
     

@@ -9,7 +9,7 @@ using System.Xml.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
-namespace Cogito.COM.MsBuild
+namespace Cogito.COM.MSBuild
 {
 
     public class ResolveAssemblyManifestMetadata :
