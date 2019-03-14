@@ -13,7 +13,7 @@
     <PropertyGroup>
         <EnableCOMExport Condition="'$(EnableCOMExport)' == ''">false</EnableCOMExport>
         <EnableCOMImport Condition="'$(EnableCOMImport)' == ''">false</EnableCOMImport>
-        
+
         <!-- embed com objects if import/export set -->
         <EmbedCOMTypeLib Condition="'$(EnableCOMExport)' == 'true' and '$(EmbedCOMTypeLib)' == ''">true</EmbedCOMTypeLib>
         <EmbedCOMTypeLib Condition="'$(EnableCOMImport)' == 'true' and '$(EmbedCOMTypeLib)' == ''">true</EmbedCOMTypeLib>
@@ -26,7 +26,7 @@
         <MSBuildDisableGetCopyToOutputDirectoryItemsOptimization>true</MSBuildDisableGetCopyToOutputDirectoryItemsOptimization>
         <COMTaskAssembly Condition="'$(COMTaskAssembly)' != ''">$([System.IO.Path]::GetFullPath($(COMTaskAssembly)))</COMTaskAssembly>
     </PropertyGroup>
-    
+
     <PropertyGroup>
         <TargetsTriggeredByCompilation>
             $(TargetsTriggeredByCompilation);
@@ -36,9 +36,12 @@
     </PropertyGroup>
 
     <Target Name="ConfigureCOMVariables">
+        <Error Text="Could not find mt.exe utility in any of the configured paths." Condition="'@(MtToolPathItems)' == ''" />
+        <GetFirstItem Items="@(MtToolPathItems)">
+            <Output TaskParameter="FirstItem" PropertyName="MtToolPathItem"/>
+        </GetFirstItem>
         <PropertyGroup>
-            <MtToolPathExpr>@(MtToolPathItems)</MtToolPathExpr>
-            <MtToolPath>$([System.IO.Path]::GetDirectoryName($(MtToolPathExpr.Substring(0, $(MtToolPathExpr.IndexOf(';'))))))</MtToolPath>
+            <MtToolPath>$([System.IO.Path]::GetDirectoryName($(MtToolPathItem)))</MtToolPath>
         </PropertyGroup>
     </Target>
 
@@ -173,5 +176,16 @@
             <Win32Manifest Condition="Exists('$(IntermediateCOMApplicationManifest)')">$(IntermediateCOMApplicationManifest)</Win32Manifest>
         </PropertyGroup>
     </Target>
+
+    <UsingTask TaskName="GetFirstItem" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+        <ParameterGroup>
+            <Items ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+            <FirstItem ParameterType="System.String" Output="true" Required="false" />
+        </ParameterGroup>
+        <Task>
+            <Using Namespace="System.Linq"/>
+            <Code Type="Fragment" Language="cs">FirstItem = Items.First().ItemSpec;</Code>
+        </Task>
+    </UsingTask>
 
 </Project>
