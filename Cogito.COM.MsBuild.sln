@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2027
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28711.60
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CC86FB94-6D1C-4919-A797-2165F050F9B8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cogito.COM.MsBuild", "Cogito.COM.MsBuild\Cogito.COM.MsBuild.csproj", "{22620998-0EC9-4084-83DA-E3DCAD342ACE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cogito.COM.MSBuild", "Cogito.COM.MsBuild\Cogito.COM.MSBuild.csproj", "{22620998-0EC9-4084-83DA-E3DCAD342ACE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cogito.COM.MsBuild.TestProject", "Cogito.COM.MsBuild.TestProject\Cogito.COM.MsBuild.TestProject.csproj", "{32E6F036-6AD6-4A59-A51D-B1B6FFF266C2}"
 EndProject
