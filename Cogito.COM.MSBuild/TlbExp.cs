@@ -117,8 +117,8 @@ namespace Cogito.COM.MSBuild
                     proc.StartInfo.UseShellExecute = false;
                     proc.StartInfo.RedirectStandardOutput = true;
                     proc.StartInfo.RedirectStandardError = true;
-                    proc.OutputDataReceived += (s, e) => a.AppendLine(e.Data);
-                    proc.ErrorDataReceived += (s, e) => b.AppendLine(e.Data);
+                    proc.OutputDataReceived += (s, e) => { lock (a) { a.AppendLine(e.Data); } };
+                    proc.ErrorDataReceived += (s, e) => { lock (b) { b.AppendLine(e.Data); } };
 
                     // start process
                     Log.LogMessage("{0} {1}", proc.StartInfo.FileName, proc.StartInfo.Arguments);
@@ -132,6 +132,10 @@ namespace Cogito.COM.MSBuild
                         Log.LogError("tlbexp.exe took too long to respond.");
                         proc.Kill();
                     }
+
+                    // save exit code and dispose
+                    var exit = proc.ExitCode;
+                    proc.Dispose();
 
                     if (a.Length > 0)
                     {
@@ -148,7 +152,7 @@ namespace Cogito.COM.MSBuild
                     }
 
                     // success is based on exit code
-                    return proc.ExitCode == 0;
+                    return exit == 0;
                 }
             }
             catch (Exception e)

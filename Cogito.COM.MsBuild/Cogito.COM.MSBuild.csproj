@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net45</TargetFramework>
+        <Authors>Jerome Haltom</Authors>
+        <Description>MSBuild extensions for building COM assembly manifests and COM application manifests for COM registry free activation.</Description>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
+        <PackageProjectUrl>https://github.com/wasabii/Cogito.COM.MsBuild</PackageProjectUrl>
+        <DevelopmentDependency>true</DevelopmentDependency>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Reference Include="Microsoft.Build.Framework" />
+        <Reference Include="Microsoft.Build.Utilities.v4.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="build\*.targets;build\*.props">
+            <Pack>true</Pack>
+            <PackagePath>build</PackagePath>
+        </None>
+    </ItemGroup>
+
+</Project>
